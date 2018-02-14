@@ -2,9 +2,40 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Projet</title>
+    <title></title>
+    <link rel="stylesheet" href="style/style.css">
   </head>
   <body>
-    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    <header class="header">
+      <span class="menu-center">Bienvenue sur Couïze</span>
+    </header>
+    <div class="login-page">
+      <div class="form">
+        <form class="register-form">
+          <input type="text" placeholder="Nom"/>
+          <input type="text" placeholder="Prénom"/>
+          <input type="text" placeholder="Email"/>
+          <input type="password" placeholder="Mot de passe"/>
+          <select class="" name="etat">
+            <option value="true">Professeur</option>
+            <option value="false">Eleve</option>
+          </select>
+          <button>S'enregistrer</button>
+          <p class="message">Déjà inscrit ? <a href="#">Se connecter</a></p>
+        </form>
+        <form class="login-form" action="liste.html">
+          <input type="text" placeholder="Pseudo"/>
+          <input type="password" placeholder="Mot de passe"/>
+          <button>Connexion</button>
+          <p class="message">Pas connecté ?<a href="#"> Créer son compte</a></p>
+        </form>
+      </div>
+    </div>
   </body>
+  <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+$('.message a').click(function(){
+ $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
+});
+</script>
 </html>
