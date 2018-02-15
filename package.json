@@ -1,0 +1,19 @@
+{
+  "name": "mi2_project_2018",
+  "version": "1.0.0",
+  "description": "Projet mi2",
+  "main": "serveur.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AmbryM/mi2_project_2018.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AmbryM/mi2_project_2018/issues"
+  },
+  "homepage": "https://github.com/AmbryM/mi2_project_2018#readme"
+}
