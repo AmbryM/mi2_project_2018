@@ -17,6 +17,33 @@ h3 {
   color: #c25e54;
   margin-bottom: 15px;
 }
+
+.code-area {
+    position: absolute;
+    width: 320px;
+	min-width: 320px;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.code-area > span {
+    display: block;
+}
+
+@media screen and (max-width: 320px) {
+    .code-area {
+		font-size: 5vw;
+		min-width: auto;
+        width: 95%;
+		margin: auto;
+		padding: 5px;
+		padding-left: 10px;
+		line-height: 6.5vw;
+    }
+}
+
 .header {
   height: 4.5em;
   -webkit-box-shadow: 0px 5px 17px 0px rgba(184,184,184,1);

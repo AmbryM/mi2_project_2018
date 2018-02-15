@@ -1,1 +1,2 @@
 https://codeforgeek.com/2015/05/expressjs-router-tutorial/
+https://scotch.io/tutorials/use-ejs-to-template-your-node-application
