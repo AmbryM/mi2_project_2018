@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/AmbryM/mi2_project_2018/issues"
   },
-  "homepage": "https://github.com/AmbryM/mi2_project_2018#readme"
+  "homepage": "https://github.com/AmbryM/mi2_project_2018#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1"
+  },
+  "dependencies": {
+    "express": "^4.16.2"
+  }
 }
