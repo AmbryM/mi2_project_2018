@@ -10,6 +10,25 @@ var router = express.Router();
 var path = require('path');
 var EtudiantModule = require('./Model/Etudiant.js');
 
+var mysql = require('mysql');
+
+
+//Connexion BD
+var connection = mysql.createConnection({
+    host: '127.0.0.1',
+    user: 'root',
+    password: '',
+    database: 'projet_web_dynamique'
+});
+
+connection.connect(function(err){
+    if(err){
+        console.log("Connexion échouée");
+    }else{
+        console.log("Connexion réussi");
+    }
+});
+
 /**
 *
 * CORPS
