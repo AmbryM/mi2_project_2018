@@ -3,10 +3,12 @@
 * VARIABLES
 *
 **/
+var mysql = require('mysql');
 var express = require('express');
 var app = express();
 var router = express.Router();
 var path = require('path');
+var EtudiantModule = require('./Model/Etudiant.js');
 
 /**
 *
@@ -17,6 +19,7 @@ var path = require('path');
 app.engine('ejs', require('ejs').renderFile);
 app.set('view engine', 'ejs');
 app.use('/style', express.static(path.join(__dirname + '/style')));
+app.use('/model', express.static(path.join(__dirname + '/model')));
 app.get('/', function(req, res) {
 	res.setHeader('Content-Type', 'text/html');
 	res.sendFile(path.join(__dirname + '/index.html'));
@@ -67,6 +70,27 @@ router.get("/questionnaire/:idQuestionnaire/stats",function(req,res){
   params.idQuestionnaire = req.params.idQuestionnaire;
   res.render('stats.ejs', params);
 });
+
+/**
+*
+* DATABASE
+*
+**/
+
+var connection = mysql.createConnection({
+  host : 'localhost',
+  user : 'root',
+  password : '',
+  database : 'projet_web_dynamique'
+});
+
+connection.connect( function(err) {
+  if (err) throw err;
+  console.log("Connected!");
+});
+
+var etudiant = new EtudiantModule("Ambry","Maxime");
+etudiant.createInDB(connection);
 
 /**
 *
