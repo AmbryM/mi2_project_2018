@@ -58,7 +58,16 @@ router.get("/questionnaire/creation",function(req,res){
   res.render('creation.ejs');
 });
 
-router.get("/liste",function(req,res){
+router.post("/liste",function(req,res){
+  var params = {};
+  // Partie connexion
+  // Récupération des paramètres post lors de la connexion
+  params.pseudo = req.body.pseudo;
+  params.password = req.body.password;
+
+  var user = userDAO.getByPseudoPassword(connection, params.pseudo, params.password);
+  console.log(user);
+
   res.render('liste.ejs');
 });
 
