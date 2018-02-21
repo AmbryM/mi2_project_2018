@@ -8,7 +8,15 @@ module.exports = class Utilisateur {
 		this.groupe = groupe;
   }
 
-	static getByPseudoPassword(db, pseudo, password){
+	/**
+	 * Récupère un étudiant avec ses identifiants de connexion
+	 *
+	 * @param db
+	 * @param pseudo
+	 * @param password
+	 * @returns {Utilisateur}
+	 */
+	static getUtilisateurByPseudoPassword(db, pseudo, password){
 
 		return new Promise((resolve, reject) => {
 				var sql = 'SELECT * FROM `utilisateur` WHERE `pseudo`=\'' + pseudo + '\' AND `mdp`=\'' + password + '\'';
@@ -23,47 +31,80 @@ module.exports = class Utilisateur {
         });
     });
 
+	}
 
+	/**
+	 * Récupère un étudiant avec son id
+	 *
+	 * @param db
+	 * @param id
+	 * @returns {Utilisateur}
+	 */
+	static getUtilisateurById(db,id) {
 
-    // var finalUser = JSON.stringify('utilisateur');
-		// Envoie de la requête
-		// return db.query(requete, function(err, result, fields){
-		//
-		//    if(err) {
-		// 	    console.log('Impossible de lire les comptes analytiques');
-		//    }
-		// 	 else {
-		//
-		// 			// var utilisateur;
-		//
-		// 			if(result.length == 0) {
-		//         	console.log('vide');
-		//     	}
-		//
-		// 			else {
-		// 					// utilisateur = 'test4';
-		        	// new user(result[0].id, result[0].pseudo, result[0].mdp, result[0].role, result[0].groupe);
-		// 					// finalUser = JSON.stringify(utilisateur);
-		// 					// console.log(JSON.stringify(utilisateur));
-		// 					// console.log('TEST'+utilisateur+' ET '+utilisateur.pseudo);
-		//     	}
-		//
-		// 			// return  utilisateur;
-		//     }
-		//
-		// 		// return 'aaa';
-		// });
+		return new Promise((resolve, reject) => {
+				var sql = 'SELECT * FROM `utilisateur` WHERE `id`=\'' + id + '\'';
+				db.query(sql,(err,rows) => {
+						if (err) {
+							return reject(err);
+						}
+						else {
+							var user = new Utilisateur(rows[0].id, rows[0].pseudo, rows[0].mdp, rows[0].role, rows[0].groupe);
+							resolve(user);
+						}
+				});
+		});
 
+	}
 
-		// return final;
+	/**
+	 * Récupère tous les groupes
+	 *
+	 * @param db
+	 * @returns {Utilisateur}
+	 */
+	static getAllUtilisateur(db) {
 
+		return new Promise((resolve, reject) => {
+				var sql = 'SELECT * FROM `Utilisateur`';
+				db.query(sql,(err,rows) => {
+						if (err) {
+							return reject(err);
+						}
+						else {
+							//TODO. Traiter ROWS pour retourner une liste
+							resolve(rows);
+						}
+				});
+		});
+
+	}
+
+	/**
+	 * Créé un étudiant
+	 *
+	 * @param db
+	 * @param pseudo
+	 * @param mdp
+	 * @param role
+	 * @param groupe
+	 * @returns {boolean}
+	 */
+	static insertUtilisateur(db,pseudo,mdp,role,groupe) {
+
+		return new Promise((resolve, reject) => {
+				db.query("INSERT INTO utilisateur (pseudo,mdp,role,groupe) VALUES (?,?,?,?)", [pseudo,mdp,role,groupe],(err,rows) => {
+						if (err) {
+							return reject(err);
+						}
+						else {
+							resolve(1); //Tout c'est bien passé
+						}
+				});
+		});
 
 	}
 
 
-	static teste(pseudo, password){
 
-		return pseudo;
-
-	}
 }
