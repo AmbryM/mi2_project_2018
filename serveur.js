@@ -10,7 +10,16 @@ var router = express.Router();
 var path = require('path');
 var EtudiantModule = require('./Model/Etudiant.js');
 
+var bodyParser = require('body-parser')
+
+//Here we are configuring express to use body-parser as middle-ware.
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
 var mysql = require('mysql');
+
+// var UtilisateurModule = require('./model/Utilisateur.js');
+var userDAO = require('./model/Utilisateur.js');
 
 
 //Connexion BD
@@ -58,17 +67,27 @@ router.get("/questionnaire/creation",function(req,res){
   res.render('creation.ejs');
 });
 
-router.post("/liste",function(req,res){
+router.post("/accueil",function(req,res){
+  //Récupération des champs POST
   var params = {};
-  // Partie connexion
-  // Récupération des paramètres post lors de la connexion
+
   params.pseudo = req.body.pseudo;
   params.password = req.body.password;
-
+  //Création d'un utilisateur
   var user = userDAO.getByPseudoPassword(connection, params.pseudo, params.password);
-  console.log(user);
+  user.then(function(result) {
+    var params = {};
+    params.utilisateur = result;
+    //Si c'est un prof on redirige vers son interface
+    if (result.role) {
+      res.render('professeur.ejs', params);
+    }
+    //Sinon c'est un eleve, et on redirige vers son interface
+    else {
+      res.render('eleve.ejs', params);
+    }
+  });
 
-  res.render('liste.ejs');
 });
 
 router.get("/questionnaire/:idQuestionnaire/lobby",function(req,res){
@@ -105,20 +124,20 @@ router.get("/questionnaire/:idQuestionnaire/stats",function(req,res){
 *
 **/
 
-var connection = mysql.createConnection({
-  host : 'localhost',
-  user : 'root',
-  password : '',
-  database : 'projet_web_dynamique'
-});
+// var connection = mysql.createConnection({
+//   host : 'localhost',
+//   user : 'root',
+//   password : '',
+//   database : 'projet_web_dynamique'
+// });
 
-connection.connect( function(err) {
-  if (err) throw err;
-  console.log("Connected!");
-});
-
-var etudiant = new EtudiantModule("Ambry","Maxime");
-etudiant.createInDB(connection);
+// connection.connect( function(err) {
+//   if (err) throw err;
+//   console.log("Connected!");
+// });
+//
+// var etudiant = new EtudiantModule("Ambry","Maxime");
+// etudiant.createInDB(connection);
 
 /**
 *
