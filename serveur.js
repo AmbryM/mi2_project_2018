@@ -8,7 +8,10 @@ var express = require('express');
 var app = express();
 var router = express.Router();
 var path = require('path');
-var EtudiantModule = require('./Model/Etudiant.js');
+var server = require('http').createServer(app);  
+var io = require('socket.io')(server);
+
+//var EtudiantModule = require('./Model/Etudiant.js');
 
 var bodyParser = require('body-parser')
 
@@ -74,17 +77,45 @@ router.post("/accueil",function(req,res){
   params.pseudo = req.body.pseudo;
   params.password = req.body.password;
   //Création d'un utilisateur
-  var user = userDAO.getByPseudoPassword(connection, params.pseudo, params.password);
+  var user = userDAO.getUtilisateurByPseudoPassword(connection, params.pseudo, params.password);
   user.then(function(result) {
     var params = {};
     params.utilisateur = result;
     //Si c'est un prof on redirige vers son interface
     if (result.role) {
-      res.render('professeur.ejs', params);
+      // Récupération de tous les questionnaires
+      questionnaireDAO = require('./model/Questionnaire.js');
+      var questionnaires = questionnaireDAO.getAllQuestionnaire(connection);
+      questionnaires.then(function(result){
+        params.questionnaires = result;
+        res.render('professeur.ejs', params);
+      });
     }
     //Sinon c'est un eleve, et on redirige vers son interface
     else {
-      res.render('eleve.ejs', params);
+      // Récupération de l'objet Groupe
+      groupeDAO = require('./model/Groupe.js');
+      var groupe = groupeDAO.getGroupeById(connection, result.groupe);
+      groupe.then(function(result){
+        params.oGroupe = result;
+      });
+
+      // Récupération des questionnaires associées à l'élève 
+      questionnaireDAO = require('./model/Questionnaire.js');
+      var questionnaires = questionnaireDAO.getQuestionnaireByGroupe(connection, result.groupe);
+      questionnaires.then(function(result){
+        params.questionnaires = result;
+        //Récupération du nombre de question pour chaque questionnaire
+        // params.nbq = [];
+        // for (var i = 0; i < params.questionnaires.length; i++) {
+        //   var nbQuestion = questionnaireDAO.getNbQuestionByQuestionnaire(connection, params.questionnaires[i].id);
+        //   nbQuestion.then(function(res){
+        //     params.nbq.push(res);
+        //     console.log(res);
+        //   });
+        // }
+        res.render('eleve.ejs', params);
+      });
     }
   });
 
@@ -151,4 +182,18 @@ app.use("*",function(req,res){
   // res.sendFile(__dirname + "/public/404.ejs");
 });
 
-app.listen(8080);
+// Quand un client se connecte, on le note dans la console
+
+io.sockets.on('connection', function (socket) {
+
+  socket.on('info', function(message){
+    console.log(message.user + message.text);
+  })
+
+  socket.on('connexion', function(message){
+    console.log(message);
+    socket.broadcast.emit('message', 'Message à toutes les unités. Je répète, message à toutes les unités.');
+  });
+});
+
+server.listen(8080);
