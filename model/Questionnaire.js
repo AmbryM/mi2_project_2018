@@ -96,7 +96,7 @@ module.exports = class Questionnaire {
 							return reject(err);
 						}
 						else {
-							resolve(1); //Tout c'est bien passé
+							resolve(rows.insertId); //Tout c'est bien passé, on retourne l'id de l'élément inséré
 						}
 				});
 		});

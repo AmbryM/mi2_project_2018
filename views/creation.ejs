@@ -4,10 +4,10 @@
     <% include include/head %>
   </head>
   <body>
-    <% include include/menu-left %>
+    <% include include/menu-left-short %>
 
     <header class="header">
-      <span class="menu-left">Bonjour M. Goy</span>
+      <span class="menu-left">Bonjour professeur <%= utilisateur.pseudo %></span>
       <span class="menu-right">Déconnexion</span>
     </header>
 
@@ -16,8 +16,11 @@
 
       <h3>Questionnaire</h3>
 
-      <input type="text" name="" value="" placeholder="Nom du questionnaire" style="width: 20%;">
-      <input class="nbQuestion" min="1" type="number" name="nbQuestion" value="1" placeholder="Nombre de questions" onchange="showQuestion()"><br>
+      <form class="" action="add" method="post">
+      <input type="text" name="professor" value="<%= utilisateur.id %>" style="display: none;">
+      <input type="text" name="libelleQuestionnaire" value="" placeholder="Nom du questionnaire" style="width: 20%;">
+      <input class="nbQuestion" min="1" type="number" name="nbQuestion" value="1" placeholder="Nombre de questions" onchange="showQuestion()">
+      <input type="text" name="groupe" value="1" placeholder="Groupe"><br>
 
       <p>Veuillez par la suite cocher la ou les réponses qui sont justes pour chaque question</p>
 
@@ -28,9 +31,9 @@
           <div class="question-infos question-infos-1">
             <h3>Question N°1</h3>
 
-            <input type="text" name="" value="" placeholder="Quelle est votre question ?" style="width: 50%;">
-            <input class="nbReponse-1" type="number" name="" min="2" value="2" onchange="showReponse(1)" placeholder="Nombre de réponses">
-            <select onchange="showChoix(1)" class="question-type-1" name="">
+            <input type="text" name="libelleQuestion_1" value="" placeholder="Quelle est votre question ?" style="width: 50%;">
+            <input class="nbReponse-1" type="number" name="nbReponses_1" min="2" value="2" onchange="showReponse(1)" placeholder="Nombre de réponses">
+            <select onchange="showChoix(1)" class="question-type-1" name="typeQuestion_1">
                 <option value="0">Choix multiple</option>
                 <option value="1">Choix unique</option>
             </select>
@@ -40,23 +43,22 @@
           <div class="question-reponses question-reponses-1">
 
               <h3>Réponses à la question N°1</h3>
-<form class="" action="index.html" method="post">
 
 
               <!-- <input type="checkbox" name="" value=""> -->
               <input type="radio" id="test1" />
               <label for="test1" style="color: white;"></label>
-              <input type="text" name="" value="" placeholder="Libelle réponse">
+              <input type="text" name="libelleQuestion_1Reponse_1" value="" placeholder="Libelle réponse">
               <!-- <input type="checkbox" name="" value=""> -->
               <input type="radio" id="test2" />
               <label for="test2" style="color: white;"></label>
-              <input type="text" name="" value="" placeholder="Libelle réponse">
-</form>
+              <input type="text" name="libelleQuestion_1Reponse_2" value="" placeholder="Libelle réponse">
           </div>
         </div>
       </div>
 
-      <a href="#" class="btn">Valider</a>
+      <button class="btn" type="submit" name="button">Valider</button>
+      </form>
     </section>
 
   </body>
@@ -69,7 +71,7 @@
       //Si on ajoute une question
       if (nbQuestion < $('.nbQuestion').val()) {
         nbQuestion = $('.nbQuestion').val();
-        $('.questions').append("<div class=\"question-container question-container-"+nbQuestion+"\"><div class=\"question-infos question-infos-"+nbQuestion+"\"><h3>Question N°"+nbQuestion+"</h3><input type=\"text\" name=\"\" value=\"\" placeholder=\"Quelle est votre question ?\" style=\"width: 50%;\"> <input class=\"nbReponse-"+nbQuestion+"\" type=\"number\" name=\"\" min=\"2\" value=\"2\" placeholder=\"Nombre de réponses\" onchange=\"showReponse("+nbQuestion+")\"> <select onchange=\"showChoix("+nbQuestion+")\" class=\"question-type-"+nbQuestion+"\" name=\"\"><option value=\"0\">Choix multiple</option><option value=\"1\">Choix unique</option> </select></div><div class=\"question-reponses-"+nbQuestion+"\"><h3>Réponses à la question N°"+nbQuestion+"</h3><input type=\"checkbox\" name=\"\" value=\"\"> <input type=\"text\" name=\"\" value=\"\" placeholder=\"Libelle réponse\"><input type=\"checkbox\" name=\"\" value=\"\"> <input type=\"text\" name=\"\" value=\"\" placeholder=\"Libelle réponse\"></div></div>");
+        $('.questions').append("<div class=\"question-container question-container-"+nbQuestion+"\"><div class=\"question-infos question-infos-"+nbQuestion+"\"><h3>Question N°"+nbQuestion+"</h3><input type=\"text\" name=\"libelleQuestion_"+nbQuestion+"\" value=\"\" placeholder=\"Quelle est votre question ?\" style=\"width: 50%;\"> <input class=\"nbReponse-"+nbQuestion+"\" type=\"number\" name=\"nbReponses_"+nbQuestion+"\" min=\"2\" value=\"2\" placeholder=\"Nombre de réponses\" onchange=\"showReponse("+nbQuestion+")\"> <select onchange=\"showChoix("+nbQuestion+")\" class=\"question-type-"+nbQuestion+"\" name=\"typeQuestion_"+nbQuestion+"\"><option value=\"0\">Choix multiple</option><option value=\"1\">Choix unique</option> </select></div><div class=\"question-reponses-"+nbQuestion+"\"><h3>Réponses à la question N°"+nbQuestion+"</h3><input type=\"checkbox\" name=\"\" value=\"\"> <input type=\"text\" name=\"libelleQuestion_"+nbQuestion+"Reponse_1\" value=\"\" placeholder=\"Libelle réponse\"><input type=\"checkbox\" name=\"\" value=\"\"> <input type=\"text\" name=\"libelleQuestion_"+nbQuestion+"Reponse_2\" value=\"\" placeholder=\"Libelle réponse\"></div></div>");
       }
       //Si on enlève une question
       else {
@@ -106,7 +108,7 @@
       $('.question-reponses-'+numQuestion).append("<h3>Réponses à la question N°"+numQuestion+"</h3>");
 
       for (var i = 0; i < nbReponse; i++) {
-        $('.question-reponses-'+numQuestion).append("<input type=\"checkbox\" name=\"\" value=\"\"> <input type=\"text\" name=\"\" value=\"\" placeholder=\"Libelle réponse\">");
+        $('.question-reponses-'+numQuestion).append("<input type=\"checkbox\" name=\"\" value=\"\"> <input type=\"text\" name=\"libelleQuestion_"+numQuestion+"Reponse_"+(i+1)+"\" value=\"\" placeholder=\"Libelle réponse\">");
       }
     }
   </script>

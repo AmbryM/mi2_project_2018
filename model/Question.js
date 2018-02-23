@@ -39,7 +39,7 @@ module.exports = class Question {
 	 * @param questionnaire
 	 * @returns {Question}
 	 */
-	static getQuestionByQuestionnaire(db,questionnaire) {
+	static getQuestionByQuestion(db,questionnaire) {
 
 		return new Promise((resolve, reject) => {
 				var sql = 'SELECT * FROM `question` WHERE `questionnaire`=\'' + questionnaire + '\'';
@@ -66,15 +66,16 @@ module.exports = class Question {
 	 * @param questionnaire
 	 * @returns {boolean}
 	 */
-	static insertQuestionnaire(db,libelle,type,questionnaire) {
+	static insertQuestion(db,libelle,type,nbreponse,questionnaire) {
 
 		return new Promise((resolve, reject) => {
-				db.query("INSERT INTO question (libelle,type,questionnaire) VALUES (?,?,?)", [libelle,type,questionnaire],(err,rows) => {
+				db.query("INSERT INTO question (libelle,type,nbreponse,questionnaire) VALUES (?,?,?,?)", [libelle,type,nbreponse,questionnaire],(err,rows) => {
 						if (err) {
 							return reject(err);
 						}
 						else {
-							resolve(1); //Tout c'est bien passé
+							var array = [rows.insertId,nbreponse];
+							resolve(array); //Tout c'est bien passé, on retourne l'id de l'élément inséré
 						}
 				});
 		});

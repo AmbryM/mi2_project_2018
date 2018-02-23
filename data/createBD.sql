@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS `question` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `libelle` varchar(255) NOT NULL,
   `type` int(11) NOT NULL,
+  `nbreponse` int(11) NOT NULL,
   `questionnaire` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_questionnaire_id` (`questionnaire`)
