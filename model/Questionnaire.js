@@ -1,6 +1,6 @@
 module.exports = class Questionnaire {
 
-	constructor(id, pseudo, mdp, role, groupe) {
+	constructor(id, professeur, libelle, groupe) {
 		this.id = id;
 		this.professeur = professeur; 	// Représente un utilisateur ayant le rôle "Professeur"
 		this.libelle = libelle;
@@ -48,8 +48,11 @@ module.exports = class Questionnaire {
 							return reject(err);
 						}
 						else {
-							//TODO. Traiter ROWS pour retourner une liste
-							resolve(rows);
+							var questionnaires = [];
+							for (var i = 0; i < rows.length; i++) {
+								questionnaires.push(new Questionnaire(rows[i].id, rows[i].professeur, rows[i].libelle, rows[i].groupe));
+							}
+							resolve(questionnaires); // Renvoie la liste des questionnaires
 						}
 				});
 		});
@@ -71,8 +74,38 @@ module.exports = class Questionnaire {
 							return reject(err);
 						}
 						else {
-							//TODO. Traiter ROWS pour retourner une liste
-							resolve(rows);
+							var questionnaires = [];
+							for (var i = 0; i < rows.length; i++) {
+								questionnaires.push(new Questionnaire(rows[i].id, rows[i].professeur, rows[i].libelle, rows[i].groupe));
+							}
+							resolve(questionnaires); // Renvoie la liste des questionnaires
+						}
+				});
+		});
+
+	}
+
+	/**
+	 * Récupère le nombre de question d'un question avec son id
+	 *
+	 * @param db
+	 * @param id
+	 * @returns {Questionnaire}
+	 */
+	static getNbQuestionByQuestionnaire(db, id) {
+
+		return new Promise((resolve, reject) => {
+				var sql = 'SELECT COUNT(*) ' +
+						  'FROM `questionnaire` QS '+
+						  'INNER JOIN `question` Q '+
+						  'ON Q.questionnaire = QS.id ' +
+						  'WHERE QS.id=\'' + id + '\'';
+				db.query(sql,(err,rows) => {
+						if (err) {
+							return reject(err);
+						}
+						else {
+							resolve(rows[0]['COUNT(*)']); // Renvoie le nombre de question
 						}
 				});
 		});

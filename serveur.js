@@ -122,7 +122,14 @@ router.post("/questionnaire/add",function(req,res){
   user.then(function(result) {
     var params = {};
     params.utilisateur = result;
-    res.render('professeur.ejs', params);
+
+    questionnaireDAO = require('./model/Questionnaire.js');
+    var questionnaires = questionnaireDAO.getAllQuestionnaire(connection);
+    questionnaires.then(function(result){
+      params.questionnaires = result;
+      res.render('professeur.ejs', params);
+    });
+
   });
 
 });

@@ -24,7 +24,17 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <% for(var i=0; i < questionnaires.length; i++) {%>
+            <tr>
+              <td>#<%= questionnaires[i].id %></td>
+              <td><%= questionnaires[i].libelle %></td>
+              <td></td>
+              <td>questions</td>
+              <td></td>
+              <td><a href="questionnaire/<%= questionnaires[i].id %>/lobby">Lancer</a> - <a href="#">Supprimer</a></td>
+            </tr>
+          <% } %>
+          <!-- <tr>
             <td>#1</td>
             <td>Quesionnaire sur le ciel</td>
             <td>MIAW</td>
@@ -47,7 +57,7 @@
             <td>5 questions</td>
             <td>~ 5:00</td>
             <td><a href="question.html">Lancer</a> - <a href="#">Supprimer</a> </td>
-          </tr>
+          </tr> -->
         </tbody>
       </table>
     </section>

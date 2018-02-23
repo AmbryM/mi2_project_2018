@@ -12,7 +12,7 @@
 
     <section class="questionnaire">
       <h1>Liste des questionnaires</h1>
-      <p>TODO. Afficher seulement les questionnaire de son groupe</p>
+      <p>TODO. Récupérer le nombre de question d'un questionnaire</p>
       <table class="table" cellspacing="0">
         <thead>
           <tr>
@@ -25,7 +25,17 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <% for(var i=0; i < questionnaires.length; i++) {%>
+            <tr>
+              <td>#<%= questionnaires[i].id %></td>
+              <td><%= questionnaires[i].libelle %></td>
+              <td><%= oGroupe.libelle %></td>
+              <td>questions</td>
+              <td></td>
+              <td><a href="questionnaire/<%= questionnaires[i].id %>/lobby">Rejoindre</a></td>
+            </tr>
+          <% } %>
+          <!-- <tr>
             <td>#1</td>
             <td>Quesionnaire sur le ciel</td>
             <td>MIAW</td>
@@ -48,11 +58,10 @@
             <td>5 questions</td>
             <td>~ 5:00</td>
             <td><a href="question.html">Rejoindre</a></td>
-          </tr>
+          </tr> -->
         </tbody>
       </table>
     </section>
-
 
   </body>
   <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>

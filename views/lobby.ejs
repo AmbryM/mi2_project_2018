@@ -6,7 +6,7 @@
 <body>
   <% include include/menu-left-short %>
     <header class="header">
-      <span class="menu-left">Vous êtes actuellement dans le lobby</span>
+      <span class="menu-left">Vous êtes actuellement dans le lobby #<%= idQuestionnaire %></span>
       <span class="menu-right">Quitter la partie</span>
     </header>
 
@@ -17,4 +17,19 @@
 
   </body>
   <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript">
+    var socket = io.connect('http://localhost:8080');
+
+    socket.emit('info', {'text': 's\'est connecté', 'user': 'user'});
+
+    // On affiche une boîte de dialogue quand le serveur nous envoie un "message"
+    socket.on('message', function(message) {
+      alert('Le serveur a un message pour vous : ' + message);
+    })
+
+    $('#test').click(function(){
+      socket.emit('connexion', 'Je me suis connecté au questionnaire');
+    })
+  </script>
 </html>
