@@ -72,8 +72,11 @@ module.exports = class Utilisateur {
 							return reject(err);
 						}
 						else {
-							//TODO. Traiter ROWS pour retourner une liste
-							resolve(rows);
+							var utilisateurs = [];
+							for(var i = 0; i <rows.length; i++){
+								utilisateurs.push(new Utilisateur(rows[i].id, rows[i].pseudo, rows[i].mdp, rows[i].role, rows[i].groupe));
+							}
+							resolve(utilisateurs);
 						}
 				});
 		});

@@ -48,8 +48,11 @@ module.exports = class Question {
 							return reject(err);
 						}
 						else {
-							//TODO. Traiter ROWS pour retourner une liste
-							resolve(rows);
+							var questions = [];
+							for(var i = 0; i < rows.length; i++) {
+								questions.push(new Question(rows[i].id, rows[i].libelle, rows[i].type, rows[i].questionnaire));
+							}
+							resolve(questions);
 						}
 				});
 		});

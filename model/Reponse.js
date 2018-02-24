@@ -47,8 +47,11 @@ module.exports = class Reponse {
 							return reject(err);
 						}
 						else {
-							//TODO. Traiter ROWS pour retourner une liste
-							resolve(rows);
+							var reponses = [];
+							for(var i = 0; i < rows.length; i++){
+								reponses.push(new Reponse(rows[i].id, rows[i].libelle, rows[i].etat, rows[i].question));
+							}
+							resolve(reponses);
 						}
 				});
 		});
@@ -71,8 +74,11 @@ module.exports = class Reponse {
 							return reject(err);
 						}
 						else {
-							//TODO. Traiter ROWS pour retourner une liste
-							resolve(rows);
+                            var reponses = [];
+							for(var i = 0; i < rows.length; i++){
+								reponses.push(new Reponse(rows[i].id, rows[i].libelle, rows[i].etat, rows[i].question));
+							}
+							resolve(reponses);
 						}
 				});
 		});

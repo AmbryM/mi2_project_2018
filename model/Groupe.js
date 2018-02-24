@@ -44,8 +44,11 @@ module.exports = class Groupe {
 							return reject(err);
 						}
 						else {
-							//TODO. Traiter ROWS pour retourner une liste
-							resolve(rows);
+							var groupes = [];
+							for(var i = 0; i < rows.length; i++){
+								groupes.push(new Groupe(rows[i].id, rows[i].libelle));
+							}
+							resolve(groupes);
 						}
 				});
 		});

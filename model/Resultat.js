@@ -51,8 +51,11 @@ module.exports = class Resultat {
 							return reject(err);
 						}
 						else {
-							//TODO. Traiter ROWS pour retourner une liste
-							resolve(rows);
+							var resultats = [];
+							for(var i = 0; i<rows.length; i++){
+								resultats.push(new Resultat(rows[i].etudiant, rows[i].question, rows[i].reponse, rows[i].question));
+							}
+							resolve(resultats);
 						}
 				});
 		});
