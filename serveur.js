@@ -36,7 +36,7 @@ app.use(session({
 // This middleware will check if user's cookie is still saved in browser and user is not set, then automatically log the user out.
 // This usually happens when you stop your express server after login, your cookie still remains saved in the browser.
 app.use((req, res, next) => {
-    if (req.cookies.user_sid && !req.session.user) {
+    if (req.cookies.user_sid && !req.session.utilisateur) {
         res.clearCookie('user_sid');
     }
     next();
@@ -45,7 +45,7 @@ app.use((req, res, next) => {
 
 // Vérifie s'il y a un utilisateur en session
 var sessionChecker = (req, res, next) => {
-    if (req.session.user && req.cookies.user_sid) {
+    if (req.session.utilisateur && req.cookies.user_sid) {
         res.redirect('/accueil');
     } else {
         next();
@@ -169,8 +169,8 @@ router.post("/questionnaire/add",function(req,res){
 
 router.get("/accueil", function(req, res){
   var params = {};
-  if (req.session.user && req.cookies.user_sid) {
-    params.utilisateur = req.session.user;
+  if (req.session.utilisateur && req.cookies.user_sid) {
+    params.utilisateur = req.session.utilisateur;
     if(params.utilisateur.role){
       // Récupération de tous les questionnaires
       questionnaireDAO = require('./model/Questionnaire.js');
@@ -208,7 +208,7 @@ router.post("/accueil",function(req,res){
   user.then(function(result) {
     var params = {};
     params.utilisateur = result;
-    req.session.user = result;
+    req.session.utilisateur = result;
     //Si c'est un prof on redirige vers son interface
     if (result.role) {
       // Récupération de tous les questionnaires
@@ -242,10 +242,9 @@ router.post("/accueil",function(req,res){
 
 router.get("/questionnaire/:idQuestionnaire/lobby",function(req,res){
   var params = {};
-  // Récupération de la session
-  sess = req.session;
   params.idQuestionnaire = req.params.idQuestionnaire;
-  params.utilisateur = sess.utilisateur;
+  // Récupération de la session
+  params.utilisateur = JSON.stringify(req.session.utilisateur);
   res.render('lobby.ejs', params);
 });
 
@@ -306,16 +305,48 @@ app.use("*",function(req,res){
 
 // Quand un client se connecte, on le note dans la console
 
+var lobbies = {};
+
 io.sockets.on('connection', function (socket) {
 
-  socket.on('info', function(message){
-    console.log(message.user + message.text);
-  })
+  // Rafraichit la liste des participants de tous les questionnaires
+  setInterval(function(){
+    Object.keys(lobbies).forEach(function(key){
+      socket.broadcast.emit('userList'+key, lobbies[key]);
+    });
+    // socket.emit('userList', users);
+  }, 2500);
 
-  socket.on('connexion', function(message){
-    console.log(message);
-    socket.broadcast.emit('message', 'Message à toutes les unités. Je répète, message à toutes les unités.');
+  socket.on('newConnection', function(info){
+    // Créer le lobby pour le questionnaire
+    if(lobbies[info.questionnaire]){
+      // Ajout de l'utilisateur dans le lobby du questionnaire
+      lobbies[info.questionnaire][socket.id] = info.user;
+    }else{
+      // Création du lobby pour le questionnaire
+      lobbies[info.questionnaire] = {};
+      // Ajout de l'utilisateur dans le lobby
+      lobbies[info.questionnaire][socket.id] = info.user;
+    }
+    // Rafraichit la liste des participants de tous les questionnaires
+    Object.keys(lobbies).forEach(function(key){
+      socket.broadcast.emit('userList'+key, lobbies[key]);
+    });
+    if(info.user.role){
+      console.log('Le professeur ' + info.user.pseudo + ' s\'est connecté au questionnaire #' + info.questionnaire);
+    }else{
+      console.log('L\'élève ' + info.user.pseudo + ' s\'est connecté au questionnaire #' + info.questionnaire);
+    }
   });
+
+  socket.on('disconnect', function(){
+    Object.keys(lobbies).forEach(function(key){
+      delete lobbies[key][socket.id];
+      socket.broadcast.emit('userList'+key, lobbies[key]);
+    });
+    console.log('disconnect');
+  });
+
 });
 
 server.listen(8080);
