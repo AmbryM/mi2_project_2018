@@ -7,11 +7,16 @@
   <% include include/menu-left-short %>
     <header class="header">
       <span class="menu-left">Vous êtes actuellement dans le lobby #<%= idQuestionnaire %></span>
-      <span class="menu-right">Quitter la partie</span>
+      <span id="btn-disconnect" class="menu-right"><a href="/">Quitter la partie</a></span>
     </header>
 
     <section class="questionnaire">
-  
+      <div id="userList">
+        <h3>Professeur</h3>
+        <div id="professeur"></div>
+        <h3>Elèves</h3>
+        <div id="eleves"></div>
+      </div>
     </section>
 
 
@@ -21,15 +26,34 @@
   <script type="text/javascript">
     var socket = io.connect('http://localhost:8080');
 
-    socket.emit('info', {'text': ' s\'est connecté', 'user': '<%= utilisateur.pseudo %>'});
+    var user = JSON.parse('<%- utilisateur %>');
 
-    // On affiche une boîte de dialogue quand le serveur nous envoie un "message"
-    socket.on('message', function(message) {
-      alert('Le serveur a un message pour vous : ' + message);
+    socket.emit('newConnection', {'user': user, 'questionnaire': <%= idQuestionnaire %>});
+
+    socket.on('userList'+<%= idQuestionnaire %>, function(users){
+      console.log(users);
+      var professeur = document.getElementById('professeur');
+      var eleves = document.getElementById('eleves');
+        while(professeur.firstChild){
+          professeur.removeChild(professeur.firstChild);
+        }
+        while(eleves.firstChild){
+          eleves.removeChild(eleves.firstChild);
+        }
+        //console.log(users);
+        Object.keys(users).forEach(function(key){
+          var newUser = document.createElement('p');
+          newUser.appendChild(document.createTextNode(users[key].pseudo));
+          if(users[key].role){
+            professeur.appendChild(newUser);
+          }else{
+            eleves.appendChild(newUser);
+          }
+        });
     })
 
-    $('#test').click(function(){
-      socket.emit('connexion', 'Je me suis connecté au questionnaire');
-    })
+    $('#btn-disconnect').click(function(){
+      socket.disconnect();
+    });
   </script>
 </html>
