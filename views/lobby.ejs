@@ -21,7 +21,7 @@
   <script type="text/javascript">
     var socket = io.connect('http://localhost:8080');
 
-    socket.emit('info', {'text': 's\'est connecté', 'user': 'user'});
+    socket.emit('info', {'text': ' s\'est connecté', 'user': '<%= utilisateur.pseudo %>'});
 
     // On affiche une boîte de dialogue quand le serveur nous envoie un "message"
     socket.on('message', function(message) {

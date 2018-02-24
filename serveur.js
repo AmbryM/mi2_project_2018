@@ -5,6 +5,7 @@
 **/
 var mysql = require('mysql');
 var express = require('express');
+var session = require('express-session');
 var app = express();
 var router = express.Router();
 var path = require('path');
@@ -15,6 +16,7 @@ var io = require('socket.io')(server);
 
 var bodyParser = require('body-parser')
 
+app.use(session({secret: 'ssshhhhh'}));
 //Here we are configuring express to use body-parser as middle-ware.
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -28,6 +30,7 @@ var questionDAO = require('./model/Question.js');
 var reponseDAO = require('./model/Reponse.js');
 
 var user;
+var sess;
 
 
 //Connexion BD
@@ -137,7 +140,7 @@ router.post("/questionnaire/add",function(req,res){
 router.post("/accueil",function(req,res){
   //Récupération des champs POST
   var params = {};
-
+  sess = req.session;
   params.pseudo = req.body.pseudo;
   params.password = req.body.password;
   //Création d'un utilisateur
@@ -145,6 +148,7 @@ router.post("/accueil",function(req,res){
   user.then(function(result) {
     var params = {};
     params.utilisateur = result;
+    sess.utilisateur = result;
     //Si c'est un prof on redirige vers son interface
     if (result.role) {
       // Récupération de tous les questionnaires
@@ -187,7 +191,10 @@ router.post("/accueil",function(req,res){
 
 router.get("/questionnaire/:idQuestionnaire/lobby",function(req,res){
   var params = {};
+  // Récupération de la session
+  sess = req.session;
   params.idQuestionnaire = req.params.idQuestionnaire;
+  params.utilisateur = sess.utilisateur;
   res.render('lobby.ejs', params);
 });
 
