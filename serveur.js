@@ -6,20 +6,51 @@
 var mysql = require('mysql');
 var express = require('express');
 var session = require('express-session');
+var cookieParser = require('cookie-parser');
 var app = express();
 var router = express.Router();
 var path = require('path');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
-//var EtudiantModule = require('./Model/Etudiant.js');
+var bodyParser = require('body-parser');
 
-var bodyParser = require('body-parser')
-
-app.use(session({secret: 'ssshhhhh'}));
-//Here we are configuring express to use body-parser as middle-ware.
-app.use(bodyParser.urlencoded({ extended: false }));
+// initialize body-parser to parse incoming parameters requests to req.body
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+// initialize cookie-parser to allow us access the cookies stored in the browser.
+app.use(cookieParser());
+
+// initialize express-session to allow us track the logged-in user across sessions.
+app.use(session({
+    key: 'user_sid',
+    secret: 'somerandonstuffs',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        expires: 600000
+    }
+}));
+
+// This middleware will check if user's cookie is still saved in browser and user is not set, then automatically log the user out.
+// This usually happens when you stop your express server after login, your cookie still remains saved in the browser.
+app.use((req, res, next) => {
+    if (req.cookies.user_sid && !req.session.user) {
+        res.clearCookie('user_sid');
+    }
+    next();
+});
+
+
+// Vérifie s'il y a un utilisateur en session
+var sessionChecker = (req, res, next) => {
+    if (req.session.user && req.cookies.user_sid) {
+        res.redirect('/accueil');
+    } else {
+        next();
+    }
+};
 
 var mysql = require('mysql');
 
@@ -30,7 +61,6 @@ var questionDAO = require('./model/Question.js');
 var reponseDAO = require('./model/Reponse.js');
 
 var user;
-var sess;
 
 
 //Connexion BD
@@ -59,7 +89,7 @@ app.engine('ejs', require('ejs').renderFile);
 app.set('view engine', 'ejs');
 app.use('/style', express.static(path.join(__dirname + '/style')));
 app.use('/model', express.static(path.join(__dirname + '/model')));
-app.get('/', function(req, res) {
+app.get('/', sessionChecker, function(req, res) {
 	res.setHeader('Content-Type', 'text/html');
 	res.sendFile(path.join(__dirname + '/index.html'));
 });
@@ -137,10 +167,40 @@ router.post("/questionnaire/add",function(req,res){
 
 });
 
+router.get("/accueil", function(req, res){
+  var params = {};
+  if (req.session.user && req.cookies.user_sid) {
+    params.utilisateur = req.session.user;
+    if(params.utilisateur.role){
+      // Récupération de tous les questionnaires
+      questionnaireDAO = require('./model/Questionnaire.js');
+      var questionnaires = questionnaireDAO.getAllQuestionnaire(connection);
+      questionnaires.then(function(result){
+        params.questionnaires = result;
+        res.render('professeur.ejs', params);
+      });
+    }else{
+      // Récupération de l'objet Groupe
+      groupeDAO = require('./model/Groupe.js');
+      var groupe = groupeDAO.getGroupeById(connection, params.utilisateur.groupe);
+      groupe.then(function(result){
+        params.oGroupe = result;
+      });
+
+      // Récupération des questionnaires associées à l'élève
+      questionnaireDAO = require('./model/Questionnaire.js');
+      var questionnaires = questionnaireDAO.getQuestionnaireByGroupe(connection, params.utilisateur.groupe);
+      questionnaires.then(function(result){
+        params.questionnaires = result;
+        res.render('eleve.ejs', params);
+      });
+    }
+  }
+})
+
 router.post("/accueil",function(req,res){
   //Récupération des champs POST
   var params = {};
-  sess = req.session;
   params.pseudo = req.body.pseudo;
   params.password = req.body.password;
   //Création d'un utilisateur
@@ -148,7 +208,7 @@ router.post("/accueil",function(req,res){
   user.then(function(result) {
     var params = {};
     params.utilisateur = result;
-    sess.utilisateur = result;
+    req.session.user = result;
     //Si c'est un prof on redirige vers son interface
     if (result.role) {
       // Récupération de tous les questionnaires
@@ -173,15 +233,6 @@ router.post("/accueil",function(req,res){
       var questionnaires = questionnaireDAO.getQuestionnaireByGroupe(connection, result.groupe);
       questionnaires.then(function(result){
         params.questionnaires = result;
-        //Récupération du nombre de question pour chaque questionnaire
-        // params.nbq = [];
-        // for (var i = 0; i < params.questionnaires.length; i++) {
-        //   var nbQuestion = questionnaireDAO.getNbQuestionByQuestionnaire(connection, params.questionnaires[i].id);
-        //   nbQuestion.then(function(res){
-        //     params.nbq.push(res);
-        //     console.log(res);
-        //   });
-        // }
         res.render('eleve.ejs', params);
       });
     }
