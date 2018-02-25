@@ -267,6 +267,23 @@ router.get("/questionnaire/:idQuestionnaire/lobby",function(req,res){
   }
 });
 
+//Suppression questionnaire
+router.get("/questionnaire/:idQuestionnaire/supprimer",function(req,res){
+    var params = {};
+    params.idQuestionnaire = req.params.idQuestionnaire;
+    params.utilisateur = JSON.stringify(req.session.utilisateur);
+    questionnaireDAO = require('./model/Questionnaire');
+    var deleteQuestionnaire = questionnaireDAO.deleteQuestionnaire(connection, params.idQuestionnaire);
+    console.log("je passe dans la route");
+    deleteQuestionnaire.then(function(result){
+      var questionnaires = questionnaireDAO.getAllQuestionnaire(connection);
+      questionnaires.then(function(resultat){
+        params.questionnaires = resultat;
+        res.render('professeur.ejs', params)
+      });
+    });
+});
+
 router.get("/questionnaire/:idQuestionnaire/:idQuestion",function(req,res){
   var params = {};
   params.idQuestionnaire = req.params.idQuestionnaire;
@@ -291,17 +308,7 @@ router.get("/questionnaire/:idQuestionnaire/stats",function(req,res){
   res.render('stats.ejs', params);
 });
 
-//Suppression questionnaire
-router.get("/questionnaire:idQuestionnaire/supprimer",function(req,res){
-    var params = {};
-    params.idQuestionnaire = req.params.idQuestionnaire;
-    questionnaireDAO = require('./model/Questionnaire');
-    var deleteQuestionnaire = questionnaireDAO.deleteQuestionnaire(connection, params.idQuestionnaire);
-    console.log("je passe dans la route");
-    deleteQuestionnaire.then(function(result){
-      (res.render('professeur.ejs', params));
-    });
-})
+
 //Logout
 router.get('/logout', function(req, res){
   if(req.session.utilisateur && req.cookies.user_sid){
