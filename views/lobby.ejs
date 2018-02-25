@@ -32,10 +32,15 @@
     <% if(questions){%>
       if(user.role){
         questions = <%- questions%>;
-        $('<a></a>').attr("href", "/questionnaire/<%= idQuestionnaire %>/"+questions[0].id)
+        $('<a></a>').attr({"href": "/questionnaire/<%= idQuestionnaire %>/"+questions[0].id,
+                            "id": "btn-start"})
                     .html('Démarrer le questionnaire')
                     .appendTo('#userList');
       }
+
+      $('#btn-start').click(function(){
+        socket.emit('start', {'idQuestionnaire': <%= idQuestionnaire %>, 'questions': questions});
+      });
     <% } %>
 
     socket.emit('newConnection', {'user': user, 'questionnaire': <%= idQuestionnaire %>});
@@ -59,7 +64,11 @@
             eleves.appendChild(newUser);
           }
         });
-    })
+    });
+
+    socket.on('start', function(questions){
+      window.location.href = "/questionnaire/<%= idQuestionnaire %>/"+questions[0].id;
+    });
 
   </script>
 </html>

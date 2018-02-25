@@ -388,6 +388,18 @@ io.sockets.on('connection', function (socket) {
     });
   });
 
+  socket.on('start', function(data){
+    // Récupération des utilisateurs connectés au lobby du questionnaire
+    users = lobbies[data.idQuestionnaire];
+    // Envoyer à chaque utilisateur connectés que le questionnaire commence
+    // sauf au professeur
+    Object.keys(users).forEach(function(key){
+      if(!users[key].role){
+        io.to(key).emit('start', data.questions);
+      }
+    });
+  });
+
 });
 
 server.listen(8080);

@@ -65,7 +65,9 @@ CREATE TABLE IF NOT EXISTS `question` (
 
 INSERT INTO `question` (`id`, `libelle`, `type`, `questionnaire`) VALUES
   (1, 'Quelle est la couleur du cheval blanc d\'Henry IV ?', 1, 1),
-  (2, 'De quelle couleur est le ciel', 2, 2);
+  (2, 'De quelle couleur est le ciel', 2, 2),
+  (3, 'Combien un humain a-t-il de doigts sur une main', 1, 1),
+  (4, 'Que veut dire PHP', 1, 3);
 
 -- --------------------------------------------------------
 
@@ -90,7 +92,8 @@ CREATE TABLE IF NOT EXISTS `questionnaire` (
 
 INSERT INTO `questionnaire` (`id`, `professeur`, `libelle`, `groupe`) VALUES
   (1, 1, 'Questionnaire Symfony', 1),
-  (2, 2, 'Questionnaire java', 2);
+  (2, 2, 'Questionnaire java', 2),
+  (3, 1, 'Questionnaire PHP', 1);
 
 -- --------------------------------------------------------
 
@@ -114,7 +117,9 @@ CREATE TABLE IF NOT EXISTS `reponse` (
 
 INSERT INTO `reponse` (`id`, `libelle`, `etat`, `question`) VALUES
   (1, 'Noir', 1, 1),
-  (2, 'Blanc', 0, 1);
+  (2, 'Blanc', 0, 1),
+  (3, 'Rouge', 0, 1),
+  (4, 'Saumon', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -167,7 +172,9 @@ CREATE TABLE IF NOT EXISTS `utilisateur` (
 INSERT INTO `utilisateur` (`id`, `pseudo`, `mdp`, `role`, `groupe`) VALUES
   (1, 'martinp', 'martinp', 1, NULL),
   (2, 'blanchonh', 'blanchonh', 1, NULL),
-  (3, 'andrev', 'andrev', 0, 1);
+  (3, 'andrev', 'andrev', 0, 1),
+  (4, 'test', 'test', 0, 1),
+  (5, 'truc', 'truc', 0, 2);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
