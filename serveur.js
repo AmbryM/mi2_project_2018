@@ -110,7 +110,13 @@ router.get("/questionnaire/creation",function(req,res){
   user.then(function(result) {
     var params = {};
     params.utilisateur = result;
-    res.render('creation.ejs', params);
+      groupeDAO = require('./model/Groupe.js');
+      var groupes = groupeDAO.getAllGroupe(connection);
+      groupes.then(function(result){
+          params.groupes = result;
+          console.log(groupes);
+          res.render('creation.ejs', params);
+      });
   });
 
 });
