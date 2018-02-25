@@ -110,7 +110,18 @@ module.exports = class Reponse {
 
 	}
 
+    static deleteSelonIdQuestionnaire(db,id) {
+        return new Promise((resolve, reject) => {
+            db.query('DELETE FROM Reponse WHERE question in'  +
+						'(SELECT id FROM Question WHERE questionnaire =' + id + ')',(err,rows) => {
+            if (err) {
+                return reject(err);
+            }
+            else {
+                resolve(1); //Tout c'est bien passé
+			}
+		});
+    });
 
-
-
+	}
 }

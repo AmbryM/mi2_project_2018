@@ -274,12 +274,23 @@ router.get("/questionnaire/:idQuestionnaire/supprimer",function(req,res){
     params.utilisateur = JSON.stringify(req.session.utilisateur);
     questionnaireDAO = require('./model/Questionnaire');
     var deleteQuestionnaire = questionnaireDAO.deleteQuestionnaire(connection, params.idQuestionnaire);
-    console.log("je passe dans la route");
     deleteQuestionnaire.then(function(result){
-      var questionnaires = questionnaireDAO.getAllQuestionnaire(connection);
-      questionnaires.then(function(resultat){
-        params.questionnaires = resultat;
-        res.render('professeur.ejs', params)
+      reponseDAO = require('./model/Reponse');
+      var deleteReponse = reponseDAO.deleteSelonIdQuestionnaire(connection, params.idQuestionnaire);
+      deleteReponse.then(function(result) {
+        questionDAO = require('./model/Question');
+        var deleteQuestion = questionDAO.deleteSelonIdQuestionnaire(connection, params.idQuestionnaire);
+        deleteQuestion.then(function(result) {
+            resultatDAO = require('./model/Resultat');
+            var deleteResultat = resultatDAO.deleteSelonIdQuestionnaire(connection, params.idQuestionnaire);
+            deleteResultat.then(function (result) {
+                var questionnaires = questionnaireDAO.getAllQuestionnaire(connection);
+                questionnaires.then(function (resultat) {
+                    params.questionnaires = resultat;
+                    res.render('professeur.ejs', params);
+                });
+            });
+        });
       });
     });
 });
