@@ -7,7 +7,7 @@
   <% include include/menu-left-short %>
     <header class="header">
       <span class="menu-left">Vous êtes actuellement dans le lobby #<%= idQuestionnaire %></span>
-      <span id="btn-disconnect" class="menu-right"><a href="/">Quitter la partie</a></span>
+      <span id="btn-disconnect" class="menu-right"><a href="/accueil">Quitter la partie</a></span>
     </header>
 
     <section class="questionnaire">
@@ -26,12 +26,21 @@
   <script type="text/javascript">
     var socket = io.connect('http://localhost:8080');
 
-    var user = JSON.parse('<%- utilisateur %>');
+    var user = <%- utilisateur %>;
+    var questions;
+
+    <% if(questions){%>
+      if(user.role){
+        questions = <%- questions%>;
+        $('<a></a>').attr("href", "/questionnaire/<%= idQuestionnaire %>/"+questions[0].id)
+                    .html('Démarrer le questionnaire')
+                    .appendTo('#userList');
+      }
+    <% } %>
 
     socket.emit('newConnection', {'user': user, 'questionnaire': <%= idQuestionnaire %>});
 
     socket.on('userList'+<%= idQuestionnaire %>, function(users){
-      console.log(users);
       var professeur = document.getElementById('professeur');
       var eleves = document.getElementById('eleves');
         while(professeur.firstChild){
@@ -52,8 +61,5 @@
         });
     })
 
-    $('#btn-disconnect').click(function(){
-      socket.disconnect();
-    });
   </script>
 </html>

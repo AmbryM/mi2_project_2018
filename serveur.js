@@ -52,6 +52,8 @@ var sessionChecker = (req, res, next) => {
     }
 };
 
+
+
 var mysql = require('mysql');
 
 // var UtilisateurModule = require('./model/Utilisateur.js');
@@ -245,13 +247,26 @@ router.get("/questionnaire/:idQuestionnaire/lobby",function(req,res){
   params.idQuestionnaire = req.params.idQuestionnaire;
   // Récupération de la session
   params.utilisateur = JSON.stringify(req.session.utilisateur);
-  res.render('lobby.ejs', params);
+  params.questions = 0;
+  if(req.session.utilisateur.role){
+    questionDAO = require('./model/Question.js');
+    var questions = questionDAO.getQuestionByQuestion(connection, params.idQuestionnaire);
+    questions.then(function(result){
+      params.questions = JSON.stringify(result);
+      console.log(params.questions);
+      res.render('lobby.ejs', params);
+    });
+  }else{
+    res.render('lobby.ejs', params);
+  }
 });
 
 router.get("/questionnaire/:idQuestionnaire/:idQuestion",function(req,res){
   var params = {};
   params.idQuestionnaire = req.params.idQuestionnaire;
   params.idQuestion = req.params.idQuestion;
+  // Récupération de la session
+  params.utilisateur = JSON.stringify(req.session.utilisateur);
   res.render('questionnaire.ejs', params);
 });
 
@@ -268,6 +283,16 @@ router.get("/questionnaire/:idQuestionnaire/stats",function(req,res){
   var params = {};
   params.idQuestionnaire = req.params.idQuestionnaire;
   res.render('stats.ejs', params);
+});
+
+//Logout
+router.get('/logout', function(req, res){
+  if(req.session.utilisateur && req.cookies.user_sid){
+    res.clearCookie('user_sid');
+    res.redirect('/');
+  }else{
+    res.redirect('/');
+  }
 });
 
 /**
@@ -344,7 +369,6 @@ io.sockets.on('connection', function (socket) {
       delete lobbies[key][socket.id];
       socket.broadcast.emit('userList'+key, lobbies[key]);
     });
-    console.log('disconnect');
   });
 
 });

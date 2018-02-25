@@ -50,6 +50,7 @@ module.exports = class Question {
 						else {
 							var questions = [];
 							for(var i = 0; i < rows.length; i++) {
+								rows[i].libelle = rows[i].libelle.replace(/'/g, "\\\'");
 								questions.push(new Question(rows[i].id, rows[i].libelle, rows[i].type, rows[i].questionnaire));
 							}
 							resolve(questions);
