@@ -291,6 +291,17 @@ router.get("/questionnaire/:idQuestionnaire/stats",function(req,res){
   res.render('stats.ejs', params);
 });
 
+//Suppression questionnaire
+router.get("/questionnaire:idQuestionnaire/supprimer",function(req,res){
+    var params = {};
+    params.idQuestionnaire = req.params.idQuestionnaire;
+    questionnaireDAO = require('./model/Questionnaire');
+    var deleteQuestionnaire = questionnaireDAO.deleteQuestionnaire(connection, params.idQuestionnaire);
+    console.log("je passe dans la route");
+    deleteQuestionnaire.then(function(result){
+      (res.render('professeur.ejs', params));
+    });
+})
 //Logout
 router.get('/logout', function(req, res){
   if(req.session.utilisateur && req.cookies.user_sid){

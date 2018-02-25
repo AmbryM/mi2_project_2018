@@ -144,9 +144,8 @@ module.exports = class Questionnaire {
 	 * @returns {boolean}
 	 */
 	static deleteQuestionnaire(db,id) {
-
 		return new Promise((resolve, reject) => {
-				db.query('DELETE FROM `questionnaire` WHERE `questionnaire``groupe`=\'' + id + '\'',(err,rows) => {
+				db.query('DELETE FROM `questionnaire` WHERE `id`=\'' + id + '\'',(err,rows) => {
 						if (err) {
 							return reject(err);
 						}
