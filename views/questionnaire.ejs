@@ -35,6 +35,7 @@
   <script type="text/javascript">
     var socket = io.connect('http://localhost:8080');
     var user = <%- utilisateur %>
+    var clicRestant = 1;
 
     $(".card").on("click", function() {
       $(".card").css("background", "#c25e54");
@@ -44,7 +45,7 @@
     // Envoie au serveur la connexion de l'utilisateur à la question idQuestion
     socket.emit('connectToQuestion', {'user': user, 'question': <%= idQuestion %>});
 
-    socket.on('reponse', function(data){4
+    socket.on('reponse', function(data){
       var reponses = document.getElementsByClassName("received")[0];
       var p = document.createElement("p");
       var contenu = document.createTextNode(data.user.pseudo + " a répondu " + data.reponse.libelle);
@@ -54,8 +55,11 @@
 
     // Envoie la réponse au serveur
     function reponse(element){
+      if(clicRestant){
         var idReponse = element.id;
         socket.emit('reponse', {'idReponse': idReponse, 'user': user, 'idQuestion': <%= idQuestion %>, 'idQuestionnaire': <%= idQuestionnaire %>});
+        clicRestant = clicRestant - 1;
+      }
     } 
 
     function progress(percent, $element, time) {
@@ -77,6 +81,7 @@
             msLeft = endTime - (+new Date);
             if ( msLeft < 1000 ) {
                 element.innerHTML = "Times up !";
+                clicRestant = clicRestant - 1;
             } else {
                 time = new Date( msLeft );
                 hours = time.getUTCHours();
