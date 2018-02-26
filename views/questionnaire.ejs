@@ -55,7 +55,7 @@
     // Envoie la réponse au serveur
     function reponse(element){
         var idReponse = element.id;
-        socket.emit('reponse', {'idReponse': idReponse, 'user': user, 'idQuestion': <%= idQuestion %>});
+        socket.emit('reponse', {'idReponse': idReponse, 'user': user, 'idQuestion': <%= idQuestion %>, 'idQuestionnaire': <%= idQuestionnaire %>});
     } 
 
     function progress(percent, $element, time) {

@@ -457,6 +457,10 @@ io.sockets.on('connection', function (socket) {
   // A la réception d'une réponse à une question
   // On envoit la réponse de l'élève au professeur connecté
   socket.on('reponse', function(data){
+    // Insérer en base le résultat
+    resultatDAO = require('./model/Resultat.js');
+    var promise2 = resultatDAO.insertResultat(connection, data.user.id, data.idQuestion, data.idReponse, data.idQuestionnaire);
+    if(promise2){console.log('Insertion du résultat ok');}
     // Récupération de l'objet réponse
     reponseDAO = require('./model/Reponse.js');
     var promise = reponseDAO.getReponseById(connection, data.idReponse);
