@@ -301,7 +301,29 @@ router.get("/questionnaire/:idQuestionnaire/:idQuestion",function(req,res){
   params.idQuestion = req.params.idQuestion;
   // Récupération de la session
   params.utilisateur = JSON.stringify(req.session.utilisateur);
-  res.render('questionnaire.ejs', params);
+  // Récupération de la question
+  questionDAO = require('./model/Question');
+  var question = questionDAO.getQuestionById(connection, params.idQuestion);
+  question.then(function(result1){
+    params.question = result1;
+    // Récupération des réponses de la question
+    reponseDAO = require('./model/Reponse.js');
+    var reponses = reponseDAO.getReponsesFromQuestion(connection, params.idQuestion);
+    reponses.then(function(result2){
+      params.reponses = result2;
+      // Si professeur alors on récupère toutes les questions
+      if(params.utilisateur.role){
+        questionsDAO = require('./model/Question.js');
+        var questions = questionDAO.getQuestionByQuestion(connection, params.idQuestionnaire);
+        questions.then(function(result3){
+          params.questions = result3;
+          res.render('questionnaire.ejs', params);
+        });
+      }else{
+        res.render('questionnaire.ejs', params);
+      }
+    });
+  });
 });
 
 //Stats de la question
@@ -366,6 +388,7 @@ app.use("*",function(req,res){
 // Quand un client se connecte, on le note dans la console
 
 var lobbies = {};
+var questionnaires = {};
 
 io.sockets.on('connection', function (socket) {
 
@@ -377,8 +400,8 @@ io.sockets.on('connection', function (socket) {
     // socket.emit('userList', users);
   }, 2500);
 
+  // A la connexion d'un utilisateur à un questionnaire
   socket.on('newConnection', function(info){
-    // Créer le lobby pour le questionnaire
     if(lobbies[info.questionnaire]){
       // Ajout de l'utilisateur dans le lobby du questionnaire
       lobbies[info.questionnaire][socket.id] = info.user;
@@ -415,6 +438,37 @@ io.sockets.on('connection', function (socket) {
       if(!users[key].role){
         io.to(key).emit('start', data.questions);
       }
+    });
+  });
+
+  // A la connexion d'un utilisateur à une question
+  socket.on('connectToQuestion', function(info){
+    if(questionnaires[info.question]){
+      // Ajout de l'utilisateur dans le lobby de la question
+      questionnaires[info.question][socket.id] = info.user;
+    }else{
+      // Création du lobby pour la question
+      questionnaires[info.question] = {};
+      // Ajout de l'utilisateur dans le lobby de la question
+      questionnaires[info.question][socket.id] = info.user;
+    }
+  });
+
+  // A la réception d'une réponse à une question
+  // On envoit la réponse de l'élève au professeur connecté
+  socket.on('reponse', function(data){
+    // Récupération de l'objet réponse
+    reponseDAO = require('./model/Reponse.js');
+    var promise = reponseDAO.getReponseById(connection, data.idReponse);
+    promise.then(function(oReponse){
+      // Récupération des utilisateurs connectés à la question
+      users = questionnaires[data.idQuestion];
+      // Envoyer au prof la réponse à la question
+      Object.keys(users).forEach(function(key){
+        if(users[key].role){
+          io.to(key).emit('reponse', {'reponse': oReponse, 'user': data.user, 'idQuestion': data.idQuestion});
+        }
+      });
     });
   });
 

@@ -7,7 +7,7 @@
     <% include include/menu-left %>
 
     <header class="header-question">
-      <span class="menu-center">Question N° <%= idQuestion %> : Quel est la couleur du cheval blanc d'Henry IV ?</span>
+      <span class="menu-center">Question N° <%= idQuestion %> : <%= question.libelle %></span>
       <div id="countdown"></div>
     </header>
 
@@ -18,37 +18,45 @@
     </section>
 
     <section class="reponses">
-      <a href="#">
-        <div class="card">
-          Réponse 1
-        </div>
-      </a>
-
-      <a href="#">
-        <div class="card">
-          Réponse 2
-        </div>
-      </a>
-
-      <a href="#">
-        <div class="card">
-          Réponse 3
-        </div>
-      </a>
-
-      <a href="#">
-        <div class="card">
-          Réponse 4
-        </div>
-      </a>
+      <% if(JSON.parse(utilisateur).role){ %>
+      <div class="received"></div>
+      <% }else{ %>
+        <% for(var i=0; i < reponses.length; i++) { %>
+          <a id="<%= reponses[i].id %>" href="#" onclick="reponse(this)">
+            <div class="card">
+              <%= reponses[i].libelle %>
+            </div>
+          </a>
+        <% } %>
+      <% } %>
     </section>
   </body>
+  <script src="/socket.io/socket.io.js"></script>
   <script type="text/javascript">
+    var socket = io.connect('http://localhost:8080');
+    var user = <%- utilisateur %>
 
-  $(".card").on("click", function() {
-    $(".card").css("background", "#c25e54");
-    $(this).css("background", "#282c34");
-  });
+    $(".card").on("click", function() {
+      $(".card").css("background", "#c25e54");
+      $(this).css("background", "#282c34");
+    });
+
+    // Envoie au serveur la connexion de l'utilisateur à la question idQuestion
+    socket.emit('connectToQuestion', {'user': user, 'question': <%= idQuestion %>});
+
+    socket.on('reponse', function(data){4
+      var reponses = document.getElementsByClassName("received")[0];
+      var p = document.createElement("p");
+      var contenu = document.createTextNode(data.user.pseudo + " a répondu " + data.reponse.libelle);
+      p.appendChild(contenu);
+      reponses.appendChild(p);
+    });
+
+    // Envoie la réponse au serveur
+    function reponse(element){
+        var idReponse = element.id;
+        socket.emit('reponse', {'idReponse': idReponse, 'user': user, 'idQuestion': <%= idQuestion %>});
+    } 
 
     function progress(percent, $element, time) {
         var progressBarWidth = percent * $element.width() / 100;
